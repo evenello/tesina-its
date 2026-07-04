@@ -47,7 +47,7 @@
   "finanza": {
     "title": "Gestione finanziaria, budgeting ed economia base",
     "html": "<p><em>Contenuto da aggiungere — accedi al pannello di modifica per scrivere questa sezione.</em></p>",
-    "image": null
+    "image": "https://raw.githubusercontent.com/evenello/tesina-its/main/images/finanza-1783188540866.png"
   },
   "chatbot-rag": {
     "title": "Architettura tecnica Chatbot RAG (Flowise, Cohere, Supabase, Groq, Make)",
