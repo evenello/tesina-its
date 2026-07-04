@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Work — ITS Forlì</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#14203C; --ink-soft:#2B3A5C; --paper:#FBFAF8; --amber:#E8A33D; --teal:#2FBF9F;
+  --slate:#6B7A8F; --night:#0C1220; --night-soft:#16213A; --line:rgba(20,32,60,0.12);
+  --font-display:'Fraunces',serif; --font-body:'Inter',sans-serif; --font-mono:'IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{ font-family:var(--font-body); background:var(--paper); color:var(--ink); overflow:hidden; height:100vh; width:100vw; -webkit-font-smoothing:antialiased; }
+h1,h2,h3,h4{ font-family:var(--font-display); font-weight:600; letter-spacing:-0.01em; }
+button{ font-family:var(--font-body); cursor:pointer; }
+::selection{ background:var(--amber); color:var(--night); }
+
+/* ============ PAGE 1 : OPENING ============ */
+#page1{
+  position:fixed; inset:0; z-index:50;
+  display:flex; align-items:center; justify-content:center;
+  background: var(--paper);
+  transition: transform 1s cubic-bezier(.6,0,.4,1), opacity .9s ease;
+}
+#page1.zooming{ transform: scale(9); opacity:0; }
+.p1-index{
+  position:absolute; left:6vw; top:50%; transform:translateY(-50%);
+  font-family:var(--font-mono); font-size:0.72rem; color:var(--slate); max-width:230px;
+  line-height:1.9;
+}
+.p1-index b{ display:block; color:var(--ink); font-family:var(--font-mono); font-size:0.68rem; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:10px; color:var(--teal); }
+.p1-index ul{ list-style:none; }
+.p1-index li{ padding:3px 0; border-left:2px solid var(--line); padding-left:10px; }
+@media (max-width:900px){ .p1-index{ display:none; } }
+
+.p1-center{ text-align:center; max-width:640px; padding: 0 6vw; }
+.p1-eyebrow{ font-family:var(--font-mono); font-size:0.78rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--amber); margin-bottom:22px; }
+.p1-title{ font-size:clamp(2.2rem,5vw,3.6rem); line-height:1.08; margin-bottom:22px; }
+.p1-title em{ font-style:italic; color:var(--teal); }
+.p1-sub{ font-size:1.05rem; color:var(--ink-soft); margin-bottom:44px; }
+#enterBtn{
+  font-family:var(--font-mono); font-size:0.85rem; letter-spacing:0.04em;
+  background:var(--ink); color:var(--paper); border:none; border-radius:40px;
+  padding:18px 44px; transition: transform .25s ease, box-shadow .25s ease;
+  box-shadow: 0 20px 40px -20px rgba(20,32,60,0.5);
+}
+#enterBtn:hover{ transform:translateY(-3px); box-shadow:0 26px 50px -18px rgba(20,32,60,0.55); }
+
+/* ============ VIEWPORT (page 2) ============ */
+#viewport{
+  position:fixed; inset:0; z-index:10; overflow:hidden;
+  background: var(--paper);
+  cursor:grab; opacity:0; transform:scale(0.92);
+  transition: opacity .9s ease .35s, transform .9s cubic-bezier(.2,.7,.3,1) .35s;
+}
+#viewport.active{ opacity:1; transform:scale(1); }
+#viewport.grabbing{ cursor:grabbing; }
+#world{ position:absolute; top:0; left:0; width:3300px; height:5100px; will-change:transform; }
+#pathSvg{ position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; }
+#pathSvg path{ fill:none; stroke:var(--line); stroke-width:2; stroke-dasharray:2 14; stroke-linecap:round; }
+
+.card{
+  position:absolute; width:650px; background:#fff; border:1px solid var(--line);
+  border-radius:20px; padding:40px 44px; box-shadow:0 30px 60px -35px rgba(20,32,60,0.3);
+}
+.card .eyebrow{ font-family:var(--font-mono); font-size:0.68rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--teal); margin-bottom:12px; }
+.card h3.ctitle{ font-size:1.5rem; margin-bottom:18px; outline:none; }
+.card .cbody{ font-size:0.95rem; color:var(--ink-soft); outline:none; }
+.card .cbody p{ margin-bottom:14px; }
+.card .cbody h4{ font-size:1rem; color:var(--ink); margin:18px 0 8px; }
+.card .cbody ul{ padding-left:20px; margin-bottom:14px; }
+.card .cbody li{ margin-bottom:8px; }
+.card .cbody em{ color:var(--teal); font-style:normal; font-weight:600; }
+.card[data-editing="true"] .ctitle, .card[data-editing="true"] .cbody{
+  background: rgba(47,191,159,0.06); border-radius:10px; padding:6px 10px; margin:-6px -10px 8px;
+}
+
+/* image slot */
+.img-slot{ margin-bottom:18px; }
+.img-slot img{ width:100%; border-radius:12px; display:block; }
+.img-add{
+  display:none; align-items:center; justify-content:center; gap:8px;
+  border:1.5px dashed var(--line); border-radius:12px; padding:22px; margin-bottom:18px;
+  font-family:var(--font-mono); font-size:0.75rem; color:var(--slate); background:#FAFAF9;
+}
+.card[data-editing="true"] .img-add{ display:flex; }
+.img-remove{
+  display:none; font-family:var(--font-mono); font-size:0.68rem; color:#B5482E;
+  background:none; border:none; margin:-10px 0 14px; padding:0;
+}
+.card[data-editing="true"] .img-remove.has-img{ display:inline-block; }
+
+/* code + scraping animations */
+.code-anim pre{
+  background:var(--night); color:var(--teal); font-family:var(--font-mono); font-size:0.78rem;
+  border-radius:14px; padding:22px; overflow-x:auto; line-height:1.7;
+}
+.code-anim .kw{ color:var(--amber); }
+.code-anim pre code span.line{ display:block; opacity:0; transform:translateX(-8px); animation: lineIn .4s ease forwards; }
+@keyframes lineIn{ to{ opacity:1; transform:none; } }
+
+.scrape-anim{
+  height:110px; position:relative; border-radius:14px; background:#F1EEEA;
+  overflow:hidden; margin-bottom:18px; border:1px solid var(--line);
+}
+.scrape-anim::before{ content:'🌐'; position:absolute; left:18px; top:50%; transform:translateY(-50%); font-size:1.6rem; }
+.scrape-anim::after{ content:'📄 CSV'; position:absolute; right:18px; top:50%; transform:translateY(-50%);
+  font-family:var(--font-mono); font-size:0.72rem; color:var(--slate); background:#fff; padding:6px 10px; border-radius:8px; border:1px solid var(--line); }
+.scrape-row{ position:absolute; left:60px; width:26px; height:6px; background:var(--teal); border-radius:3px; opacity:0.85;
+  animation: scrapeMove 2.6s linear infinite; }
+.scrape-row:nth-child(1){ top:30%; animation-delay:0s; }
+.scrape-row:nth-child(2){ top:50%; animation-delay:.6s; }
+.scrape-row:nth-child(3){ top:70%; animation-delay:1.2s; }
+.scrape-row:nth-child(4){ top:40%; animation-delay:1.8s; }
+@keyframes scrapeMove{ 0%{ left:60px; opacity:0; } 10%{ opacity:0.9; } 85%{ opacity:0.9; } 100%{ left:calc(100% - 100px); opacity:0; } }
+
+/* chatbot mini flow */
+.flow-mini{ display:flex; gap:14px; overflow-x:auto; padding: 6px 0 12px; }
+.flow-mini-node{ flex:0 0 130px; background:var(--night); color:var(--paper); border-radius:12px; padding:14px 12px; }
+.flow-mini-node span{ font-family:var(--font-mono); font-size:0.6rem; color:var(--amber); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:6px; }
+.flow-mini-node b{ font-family:var(--font-body); font-weight:600; font-size:0.8rem; }
+
+/* ============ FLOATING MENU ============ */
+#menuToggle{
+  position:fixed; top:26px; right:26px; z-index:40;
+  background:var(--ink); color:var(--paper); border:none; border-radius:30px;
+  padding:12px 22px; font-family:var(--font-mono); font-size:0.78rem; letter-spacing:0.04em;
+  box-shadow:0 16px 30px -18px rgba(20,32,60,0.5);
+}
+#menuPanel{
+  position:fixed; top:78px; right:26px; z-index:40; width:300px;
+  background:rgba(255,255,255,0.97); backdrop-filter:blur(10px); border:1px solid var(--line);
+  border-radius:18px; padding:16px; box-shadow:0 30px 60px -30px rgba(20,32,60,0.35);
+  max-height:70vh; overflow-y:auto;
+  transform:translateY(-12px); opacity:0; pointer-events:none; transition: all .25s ease;
+}
+#menuPanel.open{ transform:none; opacity:1; pointer-events:auto; }
+#menuPanel button{
+  display:block; width:100%; text-align:left; background:none; border:none;
+  font-family:var(--font-body); font-size:0.86rem; color:var(--ink-soft); padding:10px 12px;
+  border-radius:10px; transition: background .2s ease;
+}
+#menuPanel button:hover{ background:#F1EEEA; color:var(--ink); }
+
+#homeBtn{
+  position:fixed; top:26px; left:26px; z-index:40; background:none; border:1px solid var(--line);
+  border-radius:30px; padding:10px 20px; font-family:var(--font-mono); font-size:0.75rem; color:var(--ink-soft);
+  background:rgba(255,255,255,0.9);
+}
+
+/* ============ ADMIN LOCK + MODALS ============ */
+#lockBtn{
+  position:fixed; bottom:26px; right:26px; z-index:60; width:44px; height:44px; border-radius:50%;
+  background:var(--night); color:var(--paper); border:none; font-size:1.1rem;
+  box-shadow:0 16px 30px -16px rgba(0,0,0,0.5);
+}
+.modal-overlay{
+  position:fixed; inset:0; z-index:80; background:rgba(12,18,32,0.55); backdrop-filter:blur(4px);
+  display:none; align-items:center; justify-content:center;
+}
+.modal-overlay.open{ display:flex; }
+.modal{
+  background:#fff; border-radius:20px; padding:36px; width:340px; box-shadow:0 40px 80px -30px rgba(0,0,0,0.4);
+}
+.modal h3{ font-size:1.15rem; margin-bottom:6px; }
+.modal p.hint{ font-family:var(--font-mono); font-size:0.72rem; color:var(--slate); margin-bottom:20px; line-height:1.6; }
+.modal label{ font-family:var(--font-mono); font-size:0.68rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--slate); display:block; margin-bottom:6px; margin-top:14px; }
+.modal input{ width:100%; padding:11px 13px; border:1px solid var(--line); border-radius:10px; font-family:var(--font-body); font-size:0.9rem; }
+.modal .modal-actions{ display:flex; gap:10px; margin-top:24px; }
+.modal button.primary{ flex:1; background:var(--ink); color:var(--paper); border:none; border-radius:10px; padding:12px; font-size:0.85rem; font-weight:600; }
+.modal button.ghost{ background:none; border:1px solid var(--line); border-radius:10px; padding:12px 16px; font-size:0.85rem; color:var(--slate); }
+.modal .err{ color:#B5482E; font-size:0.78rem; font-family:var(--font-mono); margin-top:10px; display:none; }
+
+/* ============ EDIT MODE TOOLBAR ============ */
+#editBar{
+  position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(120%); z-index:60;
+  background:var(--night); color:var(--paper); border-radius:40px; padding:12px 12px 12px 22px;
+  display:flex; align-items:center; gap:14px; box-shadow:0 20px 40px -18px rgba(0,0,0,0.5);
+  transition: transform .35s ease; font-family:var(--font-mono); font-size:0.78rem;
+}
+#editBar.open{ transform:translateX(-50%) translateY(0); }
+#editBar span.dot{ width:8px; height:8px; border-radius:50%; background:var(--teal); display:inline-block; margin-right:4px; }
+#saveGhBtn{ background:var(--teal); color:var(--night); border:none; border-radius:30px; padding:10px 20px; font-weight:700; font-family:var(--font-mono); font-size:0.78rem; }
+#exitEditBtn, #configGhBtn{ background:none; border:1px solid rgba(251,250,248,0.25); color:var(--paper); border-radius:30px; padding:10px 16px; font-family:var(--font-mono); font-size:0.72rem; }
+
+#toast{
+  position:fixed; bottom:96px; left:50%; transform:translateX(-50%) translateY(20px); z-index:90;
+  background:var(--ink); color:var(--paper); padding:14px 22px; border-radius:12px;
+  font-family:var(--font-mono); font-size:0.8rem; opacity:0; pointer-events:none; transition:all .3s ease;
+  box-shadow:0 20px 40px -20px rgba(0,0,0,0.5); max-width:340px; text-align:center;
+}
+#toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+input[type=file]{ display:none; }
+</style>
+</head>
+<body>
+
+<!-- ============ PAGE 1 ============ -->
+<div id="page1">
+  <div class="p1-index">
+    <b>Indice</b>
+    <ul>
+      <li>Tipologie di IA (Predictive, Generative, Agentic)</li>
+      <li>Scraping, modellazione DB, GUI e tabelle dati</li>
+      <li>Ciclo di vita del progetto e metodologie di lavoro</li>
+      <li>Business Case, Business Plan e indici finanziari</li>
+      <li>Pianificazione temporale (Gantt, Trello, Kanban)</li>
+      <li>Ruoli, responsabilità e Stakeholder</li>
+      <li>Adempimenti formali, sicurezza, Diritto Digitale (SIAE)</li>
+      <li>Marketing Concept, gestione cliente e Pitch</li>
+      <li>Gestione finanziaria, budgeting ed economia base</li>
+      <li>Architettura tecnica Chatbot RAG</li>
+      <li>Estrazione Data Insights e KPI</li>
+    </ul>
+  </div>
+  <div class="p1-center">
+    <div class="p1-eyebrow">Project Work · ITS Forlì</div>
+    <h1 class="p1-title">Competenze, non <em>titoli</em>.<br>Il mio percorso tra PM e IA.</h1>
+    <p class="p1-sub">Un viaggio tra project management, dati e intelligenza artificiale agentic, costruito durante il tirocinio in Uniser.</p>
+    <button id="enterBtn">Entra nel progetto →</button>
+  </div>
+</div>
+
+<!-- ============ VIEWPORT / CANVAS ============ -->
+<button id="homeBtn">← Copertina</button>
+<button id="menuToggle">☰ Menù</button>
+<div id="menuPanel"></div>
+
+<div id="viewport">
+  <div id="world">
+    <svg id="pathSvg"><path id="pathLine" d=""/></svg>
+    <!-- cards injected by JS -->
+  </div>
+</div>
+
+<!-- ============ ADMIN ============ -->
+<button id="lockBtn" title="Area riservata">🔒</button>
+
+<div class="modal-overlay" id="loginOverlay">
+  <div class="modal">
+    <h3>Area riservata</h3>
+    <p class="hint">Accedi per modificare testi e immagini del sito.</p>
+    <label>Utente</label><input type="text" id="loginUser" autocomplete="off">
+    <label>Password</label><input type="password" id="loginPass">
+    <div class="err" id="loginErr">Credenziali errate.</div>
+    <div class="modal-actions">
+      <button class="ghost" id="loginCancel">Annulla</button>
+      <button class="primary" id="loginSubmit">Accedi</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="ghOverlay">
+  <div class="modal">
+    <h3>Collega GitHub</h3>
+    <p class="hint">Serve una sola volta per browser. Il token resta salvato solo su questo dispositivo e viene usato per salvare le modifiche direttamente nel repository.</p>
+    <label>Proprietario (owner)</label><input type="text" id="ghOwner" placeholder="es. evenalessandrini">
+    <label>Nome repository</label><input type="text" id="ghRepo" placeholder="es. tesina-its">
+    <label>Branch</label><input type="text" id="ghBranch" value="main">
+    <label>Personal Access Token</label><input type="password" id="ghToken" placeholder="ghp_...">
+    <div class="err" id="ghErr"></div>
+    <div class="modal-actions">
+      <button class="ghost" id="ghCancel">Annulla</button>
+      <button class="primary" id="ghSave">Salva e continua</button>
+    </div>
+  </div>
+</div>
+
+<div id="editBar">
+  <span><span class="dot"></span>Modalità modifica</span>
+  <button id="configGhBtn">⚙ GitHub</button>
+  <button id="saveGhBtn">💾 Salva su GitHub</button>
+  <button id="exitEditBtn">Esci</button>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ======================================================
+   DATA
+====================================================== */
+const SECTION_ORDER = ["intro","tipologie-ia","scraping-db","ciclo-vita","business-case","pianificazione","stakeholder","adempimenti","marketing","finanza","chatbot-rag","kpi"];
+
+const POSITIONS = {
+  "intro":         {x:220,  y:220},
+  "tipologie-ia":  {x:1250, y:220},
+  "scraping-db":   {x:2280, y:220},
+  "ciclo-vita":    {x:2280, y:1420},
+  "business-case": {x:1250, y:1420},
+  "pianificazione":{x:220,  y:1420},
+  "stakeholder":   {x:220,  y:2620},
+  "adempimenti":   {x:1250, y:2620},
+  "marketing":     {x:2280, y:2620},
+  "finanza":       {x:2280, y:3820},
+  "chatbot-rag":   {x:1250, y:3820},
+  "kpi":           {x:220,  y:3820}
+};
+
+const DEFAULT_DATA = {
+  "intro": {
+    "title": "Introduzione",
+    "html": "<p>Questo project work finale racconta il mio percorso in ITS e la mia personale visione del futuro professionale, nato da una riflessione profonda sul bilancio tra opportunità e rischi dell'Intelligenza Artificiale. Partendo dal presupposto che le competenze contino più dei titoli di studio, ho analizzato l'impatto dell'automazione su ruoli strutturati come quello del Project Manager, una figura teoricamente replicabile dalle macchine per la sua natura metodologica e ripetitiva. Tuttavia, il vero discrimine risiede nei limiti intrinseci dei modelli computazionali attuali rispetto all'approccio umano:</p><ul><li><strong>Cervello Umano vs IA:</strong> il cervello umano eccelle nelle materie mnemoniche e flessibili, mentre l'IA domina l'esecuzione tecnica basata su regole e soluzioni precise.</li><li><strong>Standardizzazione del Project Management:</strong> i flussi di lavoro, i piani e i framework di gestione sono progettati per essere ciclici e replicabili, rendendoli idealmente automatizzabili da un software.</li><li><strong>Il Limite del Contesto e Turing:</strong> secondo il test di Alan Turing, una macchina è intelligente se replica il comportamento umano; oggi, le IA standard faticano ancora a elaborare contesti complessi e sfumati.</li></ul><p><strong>Il Problema dell'Allucinazione:</strong> i moderni modelli linguistici (LLM) tendono a generare fonti o risposte inventate, un limite strutturale che richiede una costante supervisione critica e un double-check umano delle informazioni.</p>",
+    "image": null
+  },
+  "tipologie-ia": {
+    "title": "Tipologie di IA (Predictive, Generative, Agentic)",
+    "html": "<h4>Il DNA dell'Agentic AI</h4><p>Si definisce attraverso quattro pilastri speculari alle competenze di un PM: affidabilità (<em>reliability</em>), autonomia, utilizzo di strumenti (<em>tools</em>) e comportamento orientato all'obiettivo (<em>goal-directed behavior</em>).</p><h4>Ciclo di Esecuzione di un Agente</h4><p>L'agente riceve un input (es. analisi rischi contratto), consulta la sua base di conoscenza (<em>knowledge</em>), agisce tramite strumenti esterni (es. Word) ed esegue una fase di riflessione (<em>reflection</em>) per autovalutare la qualità del lavoro svolto.</p><h4>Struttura di un Framework Multi-Agente</h4><p>Il lavoro viene parcellizzato tra più agenti specializzati, coordinati da un livello superiore di orchestrazione (<em>orchestration level</em>). Ogni framework include focus specifici, strumenti dedicati, linee guida comportamentali (<em>guardrails</em>), collaborazione reciproca e una memoria comune.</p><h4>Nella pratica</h4><ul><li><strong>Orchestration Level:</strong> Flowise Cloud supervisiona e indirizza l'intero flusso di lavoro.</li><li><strong>Vector Embedding:</strong> Cohere trasforma le query testuali degli studenti in vettori matematici.</li><li><strong>Knowledge Retrieval:</strong> Supabase estrae i frammenti informativi rilevanti dalla base di dati.</li><li><strong>Generative Synthesis:</strong> Groq (LLaMA 3.3 70B Versatile) elabora la risposta finale testuale.</li><li><strong>Distribution Channel:</strong> Make gestisce l'invio automatizzato dei messaggi su WhatsApp e Telegram.</li><li><strong>Knowledge & Guardrails:</strong> la documentazione aziendale costituisce i dati da consultare, mentre i limiti etici e operativi sono codificati nel prompt di sistema.</li></ul>",
+    "image": null
+  },
+  "scraping-db": {
+    "title": "Scraping, modellazione DB, GUI e tabelle dati",
+    "html": "<p>L'ecosistema software aziendale si articola su canali di comunicazione, traduzione e coordinamento operativo: <strong>Slack</strong> per la comunicazione asincrona interna e la gestione dei canali inter-HUB, <strong>Google Workspace</strong> (Meet, Calendar, Fogli) per videocall, scheduling e data entry, <strong>ChatGPT</strong> per la traduzione simultanea della messaggistica internazionale, <strong>WhatsApp Business & Email</strong> per il supporto diretto agli studenti e la gestione formale dei partner.</p><h4>Weakness — Architettura DB Warehouse</h4><p>Database statico tabellare strutturato su record (righe/aziende), attributi (colonne/anagrafica) e partizionamento tematico (fogli/settori merceologici).</p><h4>Opportunity — Ottimizzazione: Data Scraping & API Integration</h4><div class=\"scrape-anim\" data-anim=\"scrape\"></div><h4>Database Relazionale</h4><div class=\"code-anim\" data-anim=\"code\"><pre><code>CREATE TABLE student (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  -- Anagrafica\n  first_name TEXT NOT NULL,\n  last_name TEXT NOT NULL,\n  gender CHAR(1) CHECK (gender IN ('M', 'F', 'X')),\n  date_of_birth DATE,\n  email TEXT,\n  phone TEXT,\n  vet_sector TEXT,\n  -- Placement aziendale e Vincoli Relazionali\n  host_company_id UUID REFERENCES host_company(id) ON DELETE SET NULL,\n  mobility_flow_id UUID REFERENCES mobility_flow(id) ON DELETE CASCADE,\n  accommodation_id UUID REFERENCES accommodation(id) ON DELETE SET NULL,\n  placement_start DATE,\n  placement_end DATE,\n  placement_status TEXT DEFAULT 'pending' CHECK (placement_status IN ('pending', 'assigned', 'completed', 'cancelled'))\n);</code></pre></div>",
+    "image": null
+  },
+  "ciclo-vita": {
+    "title": "Ciclo di vita del progetto e metodologie di lavoro",
+    "html": "<p>Il mio inserimento all'interno dell'Hub Incoming non si è limitato all'esecuzione delle mansioni ordinarie, ma è diventato un'opportunità per ridefinire l'efficienza operativa del team. Analizzando criticamente i punti deboli dell'organizzazione — come la forte dipendenza da fogli Excel obsoleti e la frammentazione dei flussi informativi — ho proposto e implementato una trasformazione logica e tecnologica volta ad abbattere i tempi di gestione e standardizzare i processi.</p><ul><li><strong>Transizione da Fogli di Calcolo a Database Relazionali:</strong> ho evidenziato i limiti strutturali di Excel per la conservazione a lungo termine, promuovendo il passaggio a sistemi di storage precisi e architetture dati professionali.</li><li><strong>Standardizzazione e Automazione:</strong> ho spinto per l'adozione di regole rigide nell'uso di dispositivi e applicazioni aziendali, ponendo le basi per eliminare i task manuali e ripetitivi.</li><li><strong>Progettazione del Sistema Agentic:</strong> ho ideato e coordinato l'architettura di un assistente virtuale autonomo su WhatsApp e Telegram per gli studenti Erasmus, centralizzando l'accesso alla conoscenza aziendale.</li></ul><h4>Metodologia utilizzata</h4><p>Il framework applicato unisce la predittività del modello <strong>Waterfall</strong> alla flessibilità dell'<em>Agile Scrum</em>, ottimizzando il ciclo di vita del progetto (Avvio, Pianificazione, Esecuzione, Monitoraggio, Chiusura) rispetto al triplo vincolo di tempo, costo e qualità (<em>scope</em>).</p><ul><li><strong>Componente Waterfall</strong> (Avvio e Pianificazione): definizione macroscopica degli obiettivi e schedulazione dei deliverable stabili, con requisiti e vincoli normativi mappati a monte tramite WBS e cronoprogrammi.</li><li><strong>Componente Agile Scrum</strong> (Esecuzione e Controllo): sviluppo tecnico del chatbot RAG in cicli iterativi brevi (Sprint), con feedback continuo per correggere allucinazioni, affinare i prompt e testare i canali senza resettare l'intera pianificazione.</li></ul><p><strong>Integrazione PM:</strong> l'approccio ibrido garantisce il controllo burocratico e di budget tipico delle scadenze istituzionali dei bandi Erasmus (Waterfall), lasciando al team lo spazio e la rapidità di sviluppo necessari per l'innovazione digitale (Agile).</p>",
+    "image": null
+  },
+  "business-case": {
+    "title": "Business Case, Business Plan e indici finanziari",
+    "html": "<p><em>Contenuto da aggiungere — accedi al pannello di modifica per scrivere questa sezione.</em></p>",
+    "image": null
+  },
+  "pianificazione": {
+    "title": "Pianificazione temporale (Gantt, Trello, Kanban)",
+    "html": "<p><em>Contenuto da aggiungere — accedi al pannello di modifica per scrivere questa sezione.</em></p>",
+    "image": null
+  },
+  "stakeholder": {
+    "title": "Ruoli, responsabilità e gestione degli Stakeholder",
+    "html": "<p><em>Contenuto da aggiungere — accedi al pannello di modifica per scrivere questa sezione.</em></p>",
+    "image": null
+  },
+  "adempimenti": {
+    "title": "Adempimenti formali, sicurezza e Diritto Digitale (SIAE)",
+    "html": "<p><em>Contenuto da aggiungere — accedi al pannello di modifica per scrivere questa sezione.</em></p>",
+    "image": null
+  },
+  "marketing": {
+    "title": "Marketing Concept, gestione del cliente e Pitch",
+    "html": "<p><em>Contenuto da aggiungere — accedi al pannello di modifica per scrivere questa sezione.</em></p>",
+    "image": null
+  },
+  "finanza": {
+    "title": "Gestione finanziaria, budgeting ed economia base",
+    "html": "<p><em>Contenuto da aggiungere — accedi al pannello di modifica per scrivere questa sezione.</em></p>",
+    "image": null
+  },
+  "chatbot-rag": {
+    "title": "Architettura tecnica Chatbot RAG (Flowise, Cohere, Supabase, Groq, Make)",
+    "html": "<p>Ho strutturato il flusso di lavoro unendo tecnologie avanzate: Flowise Cloud come livello di orchestrazione, Supabase per il fetch dei dati, Cohere per il caricamento dei vettori e Groq con LLaMA 3.3 per la sintesi delle risposte.</p><div class=\"flow-mini\"><div class=\"flow-mini-node\"><span>Input</span><b>WhatsApp / Telegram</b></div><div class=\"flow-mini-node\"><span>Orchestration</span><b>Flowise Cloud</b></div><div class=\"flow-mini-node\"><span>Vector Embedding</span><b>Cohere</b></div><div class=\"flow-mini-node\"><span>Knowledge Retrieval</span><b>Supabase</b></div><div class=\"flow-mini-node\"><span>Generative Synthesis</span><b>Groq · LLaMA 3.3</b></div><div class=\"flow-mini-node\"><span>Distribution</span><b>Make</b></div></div>",
+    "image": null
+  },
+  "kpi": {
+    "title": "Estrazione Data Insights e KPI",
+    "html": "<p>La gestione delle attività in smart working richiede protocolli rigidi per evitare la dispersione dei flussi. Per standardizzare il recupero dei KPI di monitoraggio dei meeting, l'infrastruttura si articola su due livelli tecnici all'interno di Google Workspace:</p><h4>Automazione Entry-Level (Report nativo Google Fogli)</h4><p>Ideale per l'analisi standard dei meeting di gruppo: alla chiusura della sessione il sistema invia un log automatico via email, con tre vincoli — quorum minimo di 5 partecipanti attivi, schedulazione dall'account Admin tramite Google Calendar, chiusura forzata della timeline da parte dell'organizzatore.</p><h4>Monitoraggio Tecnico Avanzato (Meet Quality Tool)</h4><p>Riservato ai ruoli di governance IT tramite la dashboard admin.google.com: supera il limite dei 5 partecipanti e permette il tracciamento granulare in tempo reale — log attività, network graphs sulla stabilità della connessione, system performances hardware.</p><p><strong>Integrazione PM:</strong> l'estrazione sistematica di questi Data Insights automatizza la pipeline di monitoraggio del progetto, traducendo i tempi di interazione in KPI oggettivi per l'efficienza operativa del team remoto.</p>",
+    "image": null
+  }
+};
+
+let siteData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+let pendingImages = {}; // id -> File
+let editMode = false;
+
+/* ======================================================
+   LOAD DATA (try live data.json first, fallback to default)
+====================================================== */
+async function loadData(){
+  try{
+    const res = await fetch('./data.json', {cache:'no-store'});
+    if(res.ok){
+      const json = await res.json();
+      siteData = json;
+    }
+  }catch(e){ /* fallback silently to DEFAULT_DATA */ }
+  renderCards();
+  renderMenu();
+  drawPath();
+}
+
+/* ======================================================
+   RENDER
+====================================================== */
+function renderCards(){
+  const world = document.getElementById('world');
+  world.querySelectorAll('.card').forEach(c=>c.remove());
+  SECTION_ORDER.forEach(id=>{
+    const pos = POSITIONS[id];
+    const d = siteData[id] || {title:id, html:'', image:null};
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.id = 'card-' + id;
+    card.style.left = pos.x + 'px';
+    card.style.top = pos.y + 'px';
+    card.dataset.id = id;
+
+    let imgHtml = '';
+    if(d.image){
+      imgHtml = `<div class="img-slot"><img src="${d.image}" alt=""></div><button class="img-remove has-img" data-id="${id}">✕ Rimuovi immagine</button>`;
+    } else {
+      imgHtml = `<button class="img-remove" data-id="${id}"></button>`;
+    }
+
+    card.innerHTML = `
+      <div class="eyebrow">${String(SECTION_ORDER.indexOf(id)+1).padStart(2,'0')}</div>
+      <h3 class="ctitle" data-id="${id}">${d.title}</h3>
+      ${imgHtml}
+      <div class="img-add" data-id="${id}">📷 Aggiungi immagine</div>
+      <input type="file" accept="image/*" class="img-input" data-id="${id}">
+      <div class="cbody" data-id="${id}">${d.html}</div>
+    `;
+    world.appendChild(card);
+  });
+
+  // scraping animation rows
+  world.querySelectorAll('.scrape-anim').forEach(el=>{
+    if(!el.dataset.built){
+      el.dataset.built = '1';
+      for(let i=0;i<4;i++){ const r=document.createElement('div'); r.className='scrape-row'; el.appendChild(r); }
+    }
+  });
+
+  // code animation: split lines, syntax-color keywords, staggered reveal
+  world.querySelectorAll('.code-anim code').forEach(codeEl=>{
+    if(codeEl.dataset.built) return;
+    codeEl.dataset.built = '1';
+    const raw = codeEl.textContent;
+    const kw = /\b(CREATE TABLE|PRIMARY KEY|DEFAULT|NOT NULL|CHECK|IN|REFERENCES|ON DELETE|SET NULL|CASCADE)\b/g;
+    const lines = raw.split('\n');
+    codeEl.innerHTML = lines.map((line,i)=>{
+      const colored = line.replace(kw, m=>`<span class="kw">${m}</span>`);
+      return `<span class="line" style="animation-delay:${i*0.09}s">${colored}</span>`;
+    }).join('\n');
+  });
+
+  attachCardEvents();
+}
+
+function renderMenu(){
+  const panel = document.getElementById('menuPanel');
+  panel.innerHTML = SECTION_ORDER.map(id=>{
+    const d = siteData[id] || {title:id};
+    return `<button data-goto="${id}">${d.title}</button>`;
+  }).join('');
+  panel.querySelectorAll('button').forEach(b=>{
+    b.addEventListener('click', ()=>{ goTo(b.dataset.goto); document.getElementById('menuPanel').classList.remove('open'); });
+  });
+}
+
+function drawPath(){
+  const pts = SECTION_ORDER.map(id=>{
+    const p = POSITIONS[id];
+    return [p.x+325, p.y+120];
+  });
+  const d = pts.map((p,i)=> (i===0?'M':'L') + p[0] + ' ' + p[1]).join(' ');
+  document.getElementById('pathLine').setAttribute('d', d);
+}
+
+/* ======================================================
+   PAN / ZOOM CANVAS NAVIGATION
+====================================================== */
+const viewport = document.getElementById('viewport');
+const world = document.getElementById('world');
+let tx = 0, ty = 0;
+let dragging = false, lastX=0, lastY=0;
+
+function clamp(val, min, max){ return Math.max(min, Math.min(max, val)); }
+
+function applyTransform(animated){
+  const vw = viewport.clientWidth, vh = viewport.clientHeight;
+  const minX = vw - 3300 - 100, maxX = 100;
+  const minY = vh - 5100 - 100, maxY = 100;
+  tx = clamp(tx, minX, maxX);
+  ty = clamp(ty, minY, maxY);
+  world.style.transition = animated ? 'transform .8s cubic-bezier(.2,.7,.3,1)' : 'none';
+  world.style.transform = `translate(${tx}px, ${ty}px)`;
+}
+
+function goTo(id){
+  const p = POSITIONS[id];
+  const vw = viewport.clientWidth, vh = viewport.clientHeight;
+  tx = vw/2 - (p.x + 325);
+  ty = vh/2 - (p.y + 200);
+  applyTransform(true);
+}
+
+viewport.addEventListener('wheel', (e)=>{
+  e.preventDefault();
+  let dx = e.deltaX, dy = e.deltaY;
+  if(e.shiftKey && dx === 0){ dx = dy; dy = 0; }
+  tx -= dx; ty -= dy;
+  applyTransform(false);
+}, {passive:false});
+
+viewport.addEventListener('pointerdown', (e)=>{
+  if(e.target.closest('.card') && editMode) return; // let editing clicks through
+  dragging = true; lastX = e.clientX; lastY = e.clientY;
+  viewport.classList.add('grabbing');
+});
+window.addEventListener('pointermove', (e)=>{
+  if(!dragging) return;
+  tx += (e.clientX - lastX); ty += (e.clientY - lastY);
+  lastX = e.clientX; lastY = e.clientY;
+  applyTransform(false);
+});
+window.addEventListener('pointerup', ()=>{ dragging=false; viewport.classList.remove('grabbing'); });
+
+window.addEventListener('resize', ()=>applyTransform(false));
+
+/* ======================================================
+   PAGE1 -> VIEWPORT TRANSITION
+====================================================== */
+document.getElementById('enterBtn').addEventListener('click', ()=>{
+  document.getElementById('page1').classList.add('zooming');
+  viewport.classList.add('active');
+  setTimeout(()=>{ tx = viewport.clientWidth/2 - (220+325); ty = viewport.clientHeight/2 - (220+200); applyTransform(false); }, 50);
+  setTimeout(()=>{ document.getElementById('page1').style.display='none'; }, 1000);
+});
+document.getElementById('homeBtn').addEventListener('click', ()=>{
+  const page1 = document.getElementById('page1');
+  page1.style.display = 'flex';
+  requestAnimationFrame(()=>{
+    page1.classList.remove('zooming');
+    viewport.classList.remove('active');
+  });
+});
+
+document.getElementById('menuToggle').addEventListener('click', ()=>{
+  document.getElementById('menuPanel').classList.toggle('open');
+});
+
+/* ======================================================
+   TOAST
+====================================================== */
+let toastTimer;
+function toast(msg, ms=3200){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), ms);
+}
+
+/* ======================================================
+   AUTH + GITHUB CONFIG
+====================================================== */
+const lockBtn = document.getElementById('lockBtn');
+const loginOverlay = document.getElementById('loginOverlay');
+const ghOverlay = document.getElementById('ghOverlay');
+
+lockBtn.addEventListener('click', ()=>{
+  if(editMode){ toggleEdit(false); return; }
+  loginOverlay.classList.add('open');
+});
+document.getElementById('loginCancel').addEventListener('click', ()=>loginOverlay.classList.remove('open'));
+document.getElementById('loginSubmit').addEventListener('click', ()=>{
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+  if(u === 'even' && p === '2005'){
+    loginOverlay.classList.remove('open');
+    document.getElementById('loginErr').style.display = 'none';
+    const cfg = getGhConfig();
+    if(!cfg){ ghOverlay.classList.add('open'); } else { toggleEdit(true); }
+  } else {
+    document.getElementById('loginErr').style.display = 'block';
+  }
+});
+
+function getGhConfig(){
+  try{ return JSON.parse(localStorage.getItem('ghConfig')); }catch(e){ return null; }
+}
+document.getElementById('configGhBtn').addEventListener('click', ()=>{
+  const cfg = getGhConfig() || {};
+  document.getElementById('ghOwner').value = cfg.owner || '';
+  document.getElementById('ghRepo').value = cfg.repo || '';
+  document.getElementById('ghBranch').value = cfg.branch || 'main';
+  document.getElementById('ghToken').value = '';
+  ghOverlay.classList.add('open');
+});
+document.getElementById('ghCancel').addEventListener('click', ()=>ghOverlay.classList.remove('open'));
+document.getElementById('ghSave').addEventListener('click', ()=>{
+  const owner = document.getElementById('ghOwner').value.trim();
+  const repo = document.getElementById('ghRepo').value.trim();
+  const branch = document.getElementById('ghBranch').value.trim() || 'main';
+  const token = document.getElementById('ghToken').value.trim();
+  if(!owner || !repo || !token){
+    document.getElementById('ghErr').textContent = 'Compila tutti i campi.';
+    document.getElementById('ghErr').style.display = 'block';
+    return;
+  }
+  localStorage.setItem('ghConfig', JSON.stringify({owner, repo, branch, token}));
+  ghOverlay.classList.remove('open');
+  toggleEdit(true);
+});
+
+/* ======================================================
+   EDIT MODE
+====================================================== */
+function toggleEdit(on){
+  editMode = on;
+  document.getElementById('editBar').classList.toggle('open', on);
+  document.querySelectorAll('.card').forEach(c=>{
+    c.dataset.editing = on ? 'true' : 'false';
+    const title = c.querySelector('.ctitle');
+    const body = c.querySelector('.cbody');
+    title.contentEditable = on;
+    body.contentEditable = on;
+  });
+  if(!on){ pendingImages = {}; }
+}
+document.getElementById('exitEditBtn').addEventListener('click', ()=>toggleEdit(false));
+
+function attachCardEvents(){
+  document.querySelectorAll('.img-add').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelector(`.img-input[data-id="${btn.dataset.id}"]`).click();
+    });
+  });
+  document.querySelectorAll('.img-input').forEach(inp=>{
+    inp.addEventListener('change', (e)=>{
+      const file = e.target.files[0];
+      if(!file) return;
+      pendingImages[inp.dataset.id] = file;
+      const reader = new FileReader();
+      reader.onload = ()=>{
+        const card = document.getElementById('card-' + inp.dataset.id);
+        let slot = card.querySelector('.img-slot');
+        if(!slot){
+          slot = document.createElement('div');
+          slot.className = 'img-slot';
+          card.insertBefore(slot, card.querySelector('.img-add'));
+        }
+        slot.innerHTML = `<img src="${reader.result}" alt="">`;
+        const rmBtn = card.querySelector('.img-remove');
+        rmBtn.classList.add('has-img');
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+  document.querySelectorAll('.img-remove').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.dataset.id;
+      const card = document.getElementById('card-' + id);
+      const slot = card.querySelector('.img-slot');
+      if(slot) slot.remove();
+      btn.classList.remove('has-img');
+      pendingImages[id] = 'REMOVE';
+    });
+  });
+}
+
+/* ======================================================
+   SAVE TO GITHUB
+====================================================== */
+function b64FromDataUrl(dataUrl){ return dataUrl.split(',')[1]; }
+function utf8ToB64(str){ return btoa(unescape(encodeURIComponent(str))); }
+
+async function ghRequest(cfg, path, options={}){
+  const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${path}`;
+  const res = await fetch(url, {
+    ...options,
+    headers: {
+      'Authorization': `Bearer ${cfg.token}`,
+      'Accept': 'application/vnd.github+json',
+      ...(options.headers||{})
+    }
+  });
+  return res;
+}
+
+document.getElementById('saveGhBtn').addEventListener('click', async ()=>{
+  const cfg = getGhConfig();
+  if(!cfg){ ghOverlay.classList.add('open'); return; }
+  const saveBtn = document.getElementById('saveGhBtn');
+  saveBtn.disabled = true;
+  toast('Salvataggio in corso…', 10000);
+
+  try{
+    // 1. gather current text content
+    const outData = {};
+    SECTION_ORDER.forEach(id=>{
+      const card = document.getElementById('card-' + id);
+      const title = card.querySelector('.ctitle').innerText.trim();
+      const html = card.querySelector('.cbody').innerHTML;
+      const existingImg = siteData[id] && siteData[id].image ? siteData[id].image : null;
+      outData[id] = { title, html, image: existingImg };
+    });
+
+    // 2. upload pending images
+    for(const id of Object.keys(pendingImages)){
+      const val = pendingImages[id];
+      if(val === 'REMOVE'){ outData[id].image = null; continue; }
+      const file = val;
+      const dataUrl = await new Promise((res,rej)=>{
+        const r = new FileReader();
+        r.onload = ()=>res(r.result);
+        r.onerror = rej;
+        r.readAsDataURL(file);
+      });
+      const ext = (file.name.split('.').pop() || 'png').toLowerCase();
+      const fname = `images/${id}-${Date.now()}.${ext}`;
+      const putRes = await ghRequest(cfg, fname, {
+        method: 'PUT',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+          message: `Aggiorna immagine sezione ${id}`,
+          content: b64FromDataUrl(dataUrl),
+          branch: cfg.branch
+        })
+      });
+      const putJson = await putRes.json();
+      if(!putRes.ok) throw new Error(putJson.message || 'Errore upload immagine');
+      outData[id].image = putJson.content.download_url;
+    }
+
+    // 3. get current sha of data.json (if exists)
+    let sha = null;
+    const getRes = await ghRequest(cfg, `data.json?ref=${cfg.branch}`, { method:'GET' });
+    if(getRes.ok){ const getJson = await getRes.json(); sha = getJson.sha; }
+
+    // 4. write data.json
+    const jsonStr = JSON.stringify(outData, null, 2);
+    const putDataRes = await ghRequest(cfg, 'data.json', {
+      method: 'PUT',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        message: 'Aggiornamento contenuti sito',
+        content: utf8ToB64(jsonStr),
+        branch: cfg.branch,
+        ...(sha ? {sha} : {})
+      })
+    });
+    const putDataJson = await putDataRes.json();
+    if(!putDataRes.ok) throw new Error(putDataJson.message || 'Errore salvataggio dati');
+
+    siteData = outData;
+    pendingImages = {};
+    toast('✅ Salvato — il sito online si aggiornerà entro un minuto', 4500);
+  }catch(err){
+    toast('❌ ' + err.message, 5000);
+  }finally{
+    saveBtn.disabled = false;
+  }
+});
+
+/* ======================================================
+   INIT
+====================================================== */
+loadData();
+</script>
+</body>
+</html>

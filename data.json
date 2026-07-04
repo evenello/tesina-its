@@ -1,0 +1,62 @@
+{
+  "intro": {
+    "title": "Introduzione",
+    "html": "<p>Questo project work finale racconta il mio percorso in ITS e la mia personale visione del futuro professionale, nato da una riflessione profonda sul bilancio tra opportunità e rischi dell'Intelligenza Artificiale. Partendo dal presupposto che le competenze contino più dei titoli di studio, ho analizzato l'impatto dell'automazione su ruoli strutturati come quello del Project Manager, una figura teoricamente replicabile dalle macchine per la sua natura metodologica e ripetitiva. Tuttavia, il vero discrimine risiede nei limiti intrinseci dei modelli computazionali attuali rispetto all'approccio umano:</p><ul><li><strong>Cervello Umano vs IA:</strong> il cervello umano eccelle nelle materie mnemoniche e flessibili, mentre l'IA domina l'esecuzione tecnica basata su regole e soluzioni precise.</li><li><strong>Standardizzazione del Project Management:</strong> i flussi di lavoro, i piani e i framework di gestione sono progettati per essere ciclici e replicabili, rendendoli idealmente automatizzabili da un software.</li><li><strong>Il Limite del Contesto e Turing:</strong> secondo il test di Alan Turing, una macchina è intelligente se replica il comportamento umano; oggi, le IA standard faticano ancora a elaborare contesti complessi e sfumati.</li></ul><p><strong>Il Problema dell'Allucinazione:</strong> i moderni modelli linguistici (LLM) tendono a generare fonti o risposte inventate, un limite strutturale che richiede una costante supervisione critica e un double-check umano delle informazioni.</p>",
+    "image": null
+  },
+  "tipologie-ia": {
+    "title": "Tipologie di IA (Predictive, Generative, Agentic)",
+    "html": "<h4>Il DNA dell'Agentic AI</h4><p>Si definisce attraverso quattro pilastri speculari alle competenze di un PM: affidabilità (<em>reliability</em>), autonomia, utilizzo di strumenti (<em>tools</em>) e comportamento orientato all'obiettivo (<em>goal-directed behavior</em>).</p><h4>Ciclo di Esecuzione di un Agente</h4><p>L'agente riceve un input (es. analisi rischi contratto), consulta la sua base di conoscenza (<em>knowledge</em>), agisce tramite strumenti esterni (es. Word) ed esegue una fase di riflessione (<em>reflection</em>) per autovalutare la qualità del lavoro svolto.</p><h4>Struttura di un Framework Multi-Agente</h4><p>Il lavoro viene parcellizzato tra più agenti specializzati, coordinati da un livello superiore di orchestrazione (<em>orchestration level</em>). Ogni framework include focus specifici, strumenti dedicati, linee guida comportamentali (<em>guardrails</em>), collaborazione reciproca e una memoria comune.</p><h4>Nella pratica</h4><ul><li><strong>Orchestration Level:</strong> Flowise Cloud supervisiona e indirizza l'intero flusso di lavoro.</li><li><strong>Vector Embedding:</strong> Cohere trasforma le query testuali degli studenti in vettori matematici.</li><li><strong>Knowledge Retrieval:</strong> Supabase estrae i frammenti informativi rilevanti dalla base di dati.</li><li><strong>Generative Synthesis:</strong> Groq (LLaMA 3.3 70B Versatile) elabora la risposta finale testuale.</li><li><strong>Distribution Channel:</strong> Make gestisce l'invio automatizzato dei messaggi su WhatsApp e Telegram.</li><li><strong>Knowledge & Guardrails:</strong> la documentazione aziendale costituisce i dati da consultare, mentre i limiti etici e operativi sono codificati nel prompt di sistema.</li></ul>",
+    "image": null
+  },
+  "scraping-db": {
+    "title": "Scraping, modellazione DB, GUI e tabelle dati",
+    "html": "<p>L'ecosistema software aziendale si articola su canali di comunicazione, traduzione e coordinamento operativo: <strong>Slack</strong> per la comunicazione asincrona interna e la gestione dei canali inter-HUB, <strong>Google Workspace</strong> (Meet, Calendar, Fogli) per videocall, scheduling e data entry, <strong>ChatGPT</strong> per la traduzione simultanea della messaggistica internazionale, <strong>WhatsApp Business & Email</strong> per il supporto diretto agli studenti e la gestione formale dei partner.</p><h4>Weakness — Architettura DB Warehouse</h4><p>Database statico tabellare strutturato su record (righe/aziende), attributi (colonne/anagrafica) e partizionamento tematico (fogli/settori merceologici).</p><h4>Opportunity — Ottimizzazione: Data Scraping & API Integration</h4><div class=\"scrape-anim\" data-anim=\"scrape\"></div><h4>Database Relazionale</h4><div class=\"code-anim\" data-anim=\"code\"><pre><code>CREATE TABLE student (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  -- Anagrafica\n  first_name TEXT NOT NULL,\n  last_name TEXT NOT NULL,\n  gender CHAR(1) CHECK (gender IN ('M', 'F', 'X')),\n  date_of_birth DATE,\n  email TEXT,\n  phone TEXT,\n  vet_sector TEXT,\n  -- Placement aziendale e Vincoli Relazionali\n  host_company_id UUID REFERENCES host_company(id) ON DELETE SET NULL,\n  mobility_flow_id UUID REFERENCES mobility_flow(id) ON DELETE CASCADE,\n  accommodation_id UUID REFERENCES accommodation(id) ON DELETE SET NULL,\n  placement_start DATE,\n  placement_end DATE,\n  placement_status TEXT DEFAULT 'pending' CHECK (placement_status IN ('pending', 'assigned', 'completed', 'cancelled'))\n);</code></pre></div>",
+    "image": null
+  },
+  "ciclo-vita": {
+    "title": "Ciclo di vita del progetto e metodologie di lavoro",
+    "html": "<p>Il mio inserimento all'interno dell'Hub Incoming non si è limitato all'esecuzione delle mansioni ordinarie, ma è diventato un'opportunità per ridefinire l'efficienza operativa del team. Analizzando criticamente i punti deboli dell'organizzazione — come la forte dipendenza da fogli Excel obsoleti e la frammentazione dei flussi informativi — ho proposto e implementato una trasformazione logica e tecnologica volta ad abbattere i tempi di gestione e standardizzare i processi.</p><ul><li><strong>Transizione da Fogli di Calcolo a Database Relazionali:</strong> ho evidenziato i limiti strutturali di Excel per la conservazione a lungo termine, promuovendo il passaggio a sistemi di storage precisi e architetture dati professionali.</li><li><strong>Standardizzazione e Automazione:</strong> ho spinto per l'adozione di regole rigide nell'uso di dispositivi e applicazioni aziendali, ponendo le basi per eliminare i task manuali e ripetitivi.</li><li><strong>Progettazione del Sistema Agentic:</strong> ho ideato e coordinato l'architettura di un assistente virtuale autonomo su WhatsApp e Telegram per gli studenti Erasmus, centralizzando l'accesso alla conoscenza aziendale.</li></ul><h4>Metodologia utilizzata</h4><p>Il framework applicato unisce la predittività del modello <strong>Waterfall</strong> alla flessibilità dell'<em>Agile Scrum</em>, ottimizzando il ciclo di vita del progetto (Avvio, Pianificazione, Esecuzione, Monitoraggio, Chiusura) rispetto al triplo vincolo di tempo, costo e qualità (<em>scope</em>).</p><ul><li><strong>Componente Waterfall</strong> (Avvio e Pianificazione): definizione macroscopica degli obiettivi e schedulazione dei deliverable stabili, con requisiti e vincoli normativi mappati a monte tramite WBS e cronoprogrammi.</li><li><strong>Componente Agile Scrum</strong> (Esecuzione e Controllo): sviluppo tecnico del chatbot RAG in cicli iterativi brevi (Sprint), con feedback continuo per correggere allucinazioni, affinare i prompt e testare i canali senza resettare l'intera pianificazione.</li></ul><p><strong>Integrazione PM:</strong> l'approccio ibrido garantisce il controllo burocratico e di budget tipico delle scadenze istituzionali dei bandi Erasmus (Waterfall), lasciando al team lo spazio e la rapidità di sviluppo necessari per l'innovazione digitale (Agile).</p>",
+    "image": null
+  },
+  "business-case": {
+    "title": "Business Case, Business Plan e indici finanziari",
+    "html": "<p><em>Contenuto da aggiungere — accedi al pannello di modifica per scrivere questa sezione.</em></p>",
+    "image": null
+  },
+  "pianificazione": {
+    "title": "Pianificazione temporale (Gantt, Trello, Kanban)",
+    "html": "<p><em>Contenuto da aggiungere — accedi al pannello di modifica per scrivere questa sezione.</em></p>",
+    "image": null
+  },
+  "stakeholder": {
+    "title": "Ruoli, responsabilità e gestione degli Stakeholder",
+    "html": "<p><em>Contenuto da aggiungere — accedi al pannello di modifica per scrivere questa sezione.</em></p>",
+    "image": null
+  },
+  "adempimenti": {
+    "title": "Adempimenti formali, sicurezza e Diritto Digitale (SIAE)",
+    "html": "<p><em>Contenuto da aggiungere — accedi al pannello di modifica per scrivere questa sezione.</em></p>",
+    "image": null
+  },
+  "marketing": {
+    "title": "Marketing Concept, gestione del cliente e Pitch",
+    "html": "<p><em>Contenuto da aggiungere — accedi al pannello di modifica per scrivere questa sezione.</em></p>",
+    "image": null
+  },
+  "finanza": {
+    "title": "Gestione finanziaria, budgeting ed economia base",
+    "html": "<p><em>Contenuto da aggiungere — accedi al pannello di modifica per scrivere questa sezione.</em></p>",
+    "image": null
+  },
+  "chatbot-rag": {
+    "title": "Architettura tecnica Chatbot RAG (Flowise, Cohere, Supabase, Groq, Make)",
+    "html": "<p>Ho strutturato il flusso di lavoro unendo tecnologie avanzate: Flowise Cloud come livello di orchestrazione, Supabase per il fetch dei dati, Cohere per il caricamento dei vettori e Groq con LLaMA 3.3 per la sintesi delle risposte.</p><div class=\"flow-mini\"><div class=\"flow-mini-node\"><span>Input</span><b>WhatsApp / Telegram</b></div><div class=\"flow-mini-node\"><span>Orchestration</span><b>Flowise Cloud</b></div><div class=\"flow-mini-node\"><span>Vector Embedding</span><b>Cohere</b></div><div class=\"flow-mini-node\"><span>Knowledge Retrieval</span><b>Supabase</b></div><div class=\"flow-mini-node\"><span>Generative Synthesis</span><b>Groq · LLaMA 3.3</b></div><div class=\"flow-mini-node\"><span>Distribution</span><b>Make</b></div></div>",
+    "image": null
+  },
+  "kpi": {
+    "title": "Estrazione Data Insights e KPI",
+    "html": "<p>La gestione delle attività in smart working richiede protocolli rigidi per evitare la dispersione dei flussi. Per standardizzare il recupero dei KPI di monitoraggio dei meeting, l'infrastruttura si articola su due livelli tecnici all'interno di Google Workspace:</p><h4>Automazione Entry-Level (Report nativo Google Fogli)</h4><p>Ideale per l'analisi standard dei meeting di gruppo: alla chiusura della sessione il sistema invia un log automatico via email, con tre vincoli — quorum minimo di 5 partecipanti attivi, schedulazione dall'account Admin tramite Google Calendar, chiusura forzata della timeline da parte dell'organizzatore.</p><h4>Monitoraggio Tecnico Avanzato (Meet Quality Tool)</h4><p>Riservato ai ruoli di governance IT tramite la dashboard admin.google.com: supera il limite dei 5 partecipanti e permette il tracciamento granulare in tempo reale — log attività, network graphs sulla stabilità della connessione, system performances hardware.</p><p><strong>Integrazione PM:</strong> l'estrazione sistematica di questi Data Insights automatizza la pipeline di monitoraggio del progetto, traducendo i tempi di interazione in KPI oggettivi per l'efficienza operativa del team remoto.</p>",
+    "image": null
+  }
+}
