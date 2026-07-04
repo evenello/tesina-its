@@ -51,7 +51,7 @@
   },
   "chatbot-rag": {
     "title": "Architettura tecnica Chatbot RAG (Flowise, Cohere, Supabase, Groq, Make)",
-    "html": "<p>Ho strutturato il flusso di lavoro unendo tecnologie avanzate: Flowise Cloud come livello di orchestrazione, Supabase per il fetch dei dati, Cohere per il caricamento dei vettori e Groq con LLaMA 3.3 per la sintesi delle risposte.</p><div class=\"flow-mini\"><div class=\"flow-mini-node\"><span>Input</span><b>WhatsApp / Telegram</b></div><div class=\"flow-mini-node\"><span>Orchestration</span><b>Flowise Cloud</b></div><div class=\"flow-mini-node\"><span>Vector Embedding</span><b>Cohere</b></div><div class=\"flow-mini-node\"><span>Knowledge Retrieval</span><b>Supabase</b></div><div class=\"flow-mini-node\"><span>Generative Synthesis</span><b>Groq · LLaMA 3.3</b></div><div class=\"flow-mini-node\"><span>Distribution</span><b>Make</b></div></div>",
+    "html": "<p>Ho strutturato il flusso di lavoro unendo tecnologie avanzate: Flowise Cloud come livello di orchestrazione, Supabase per il fetch dei dati, Cohere per il caricamento dei vettori e Groq con LLaMA 3.3 per la sintesi delle risposte.<br><br>CHATBOT -&gt;&nbsp;@uniser_helper_bot</p><div class=\"flow-mini\"><div class=\"flow-mini-node\"><span>Input</span><b>WhatsApp / Telegram</b></div><div class=\"flow-mini-node\"><span>Orchestration</span><b>Flowise Cloud</b></div><div class=\"flow-mini-node\"><span>Vector Embedding</span><b>Cohere</b></div><div class=\"flow-mini-node\"><span>Knowledge Retrieval</span><b>Supabase</b></div><div class=\"flow-mini-node\"><span>Generative Synthesis</span><b>Groq · LLaMA 3.3</b></div><div class=\"flow-mini-node\"><span>Distribution</span><b>Make</b></div></div>",
     "image": null
   },
   "kpi": {
