@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Project Work</title>
+<title>Project Work — ITS Forlì</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -204,23 +204,25 @@ input[type=file]{ display:none; }
 <div id="page1">
   <div class="p1-index">
     <b>Indice</b>
-    <ul>
+    <ul id="p1IndexList">
       <li>Tipologie di IA (Predictive, Generative, Agentic)</li>
       <li>Scraping, modellazione DB, GUI e tabelle dati</li>
       <li>Ciclo di vita del progetto e metodologie di lavoro</li>
-      <li>Business Case, Business Plan</li>
-      <li>Pianificazione temporale (Gantt, Kanban)</li>
+      <li>Business Case, Business Plan e indici finanziari</li>
+      <li>Pianificazione temporale (Gantt, Trello, Kanban)</li>
       <li>Ruoli, responsabilità e Stakeholder</li>
-      <li>Gestione finanziaria, budgeting</li>
+      <li>Adempimenti formali, sicurezza, Diritto Digitale (SIAE)</li>
+      <li>Marketing Concept, gestione cliente e Pitch</li>
+      <li>Gestione finanziaria, budgeting ed economia base</li>
       <li>Architettura tecnica Chatbot RAG</li>
       <li>Estrazione Data Insights e KPI</li>
     </ul>
   </div>
   <div class="p1-center">
-    <div class="p1-eyebrow">Project Work</div>
-    <h1 class="p1-title">Metodologie di <em>Project Management</em>.<br> applicate all'IA.</h1>
-    <p class="p1-sub">Un viaggio tra project management, dati e intelligenza artificiale agentic, costruito durante il tirocinio in Uniser.</p>
-    <button id="enterBtn">Entra nel progetto →</button>
+    <div class="p1-eyebrow" id="p1Eyebrow">Project Work · ITS Forlì</div>
+    <h1 class="p1-title" id="p1Title">Competenze, non <em>titoli</em>.<br>Il mio percorso tra PM e IA.</h1>
+    <p class="p1-sub" id="p1Sub">Un viaggio tra project management, dati e intelligenza artificiale agentic, costruito durante il tirocinio in Uniser.</p>
+    <button id="enterBtn"><span id="p1BtnLabel">Entra nel progetto →</span></button>
   </div>
 </div>
 
@@ -359,6 +361,13 @@ const DEFAULT_DATA = {
     "title": "Estrazione Data Insights e KPI",
     "html": "<p>La gestione delle attività in smart working richiede protocolli rigidi per evitare la dispersione dei flussi. Per standardizzare il recupero dei KPI di monitoraggio dei meeting, l'infrastruttura si articola su due livelli tecnici all'interno di Google Workspace:</p><h4>Automazione Entry-Level (Report nativo Google Fogli)</h4><p>Ideale per l'analisi standard dei meeting di gruppo: alla chiusura della sessione il sistema invia un log automatico via email, con tre vincoli — quorum minimo di 5 partecipanti attivi, schedulazione dall'account Admin tramite Google Calendar, chiusura forzata della timeline da parte dell'organizzatore.</p><h4>Monitoraggio Tecnico Avanzato (Meet Quality Tool)</h4><p>Riservato ai ruoli di governance IT tramite la dashboard admin.google.com: supera il limite dei 5 partecipanti e permette il tracciamento granulare in tempo reale — log attività, network graphs sulla stabilità della connessione, system performances hardware.</p><p><strong>Integrazione PM:</strong> l'estrazione sistematica di questi Data Insights automatizza la pipeline di monitoraggio del progetto, traducendo i tempi di interazione in KPI oggettivi per l'efficienza operativa del team remoto.</p>",
     "image": null
+  },
+  "page1": {
+    "eyebrow": "Project Work",
+    "title": "Metodologie di <em>Project Management</em>.<br> applicate all'IA.",
+    "sub": "Un viaggio tra project management, dati e intelligenza artificiale agentic, costruito durante il tirocinio in Uniser.",
+    "buttonLabel": "Entra nel progetto →",
+    "indexHtml": "<li>Tipologie di IA (Predictive, Generative, Agentic)</li> <li>Scraping, modellazione DB, GUI e tabelle dati</li> <li>Ciclo di vita del progetto e metodologie di lavoro</li> <li>Business Case, Business Plan</li> <li>Pianificazione temporale (Gantt, Kanban)</li> <li>Ruoli, responsabilità e Stakeholder</li> <li>Gestione finanziaria, budgeting</li> <li>Architettura tecnica Chatbot RAG</li> <li>Estrazione Data Insights e KPI</li>"
   }
 };
 
@@ -377,9 +386,19 @@ async function loadData(){
       siteData = json;
     }
   }catch(e){ /* fallback silently to DEFAULT_DATA */ }
+  renderPage1();
   renderCards();
   renderMenu();
   drawPath();
+}
+
+function renderPage1(){
+  const p = siteData.page1 || DEFAULT_DATA.page1;
+  document.getElementById('p1Eyebrow').innerHTML = p.eyebrow;
+  document.getElementById('p1Title').innerHTML = p.title;
+  document.getElementById('p1Sub').innerHTML = p.sub;
+  document.getElementById('p1BtnLabel').innerHTML = p.buttonLabel;
+  document.getElementById('p1IndexList').innerHTML = p.indexHtml;
 }
 
 /* ======================================================
@@ -608,8 +627,24 @@ function toggleEdit(on){
     const body = c.querySelector('.cbody');
     title.contentEditable = on;
     body.contentEditable = on;
+    if(on){
+      title.addEventListener('input', liveMenuUpdate);
+    } else {
+      title.removeEventListener('input', liveMenuUpdate);
+    }
   });
   if(!on){ pendingImages = {}; }
+}
+
+function liveMenuUpdate(){
+  const panel = document.getElementById('menuPanel');
+  panel.querySelectorAll('button[data-goto]').forEach(btn=>{
+    const card = document.getElementById('card-' + btn.dataset.goto);
+    if(card){
+      const t = card.querySelector('.ctitle');
+      if(t) btn.textContent = t.innerText.trim();
+    }
+  });
 }
 document.getElementById('exitEditBtn').addEventListener('click', ()=>toggleEdit(false));
 
@@ -635,6 +670,7 @@ function attachCardEvents(){
         }
         slot.innerHTML = `<img src="${reader.result}" alt="">`;
         const rmBtn = card.querySelector('.img-remove');
+        rmBtn.textContent = '✕ Rimuovi immagine';
         rmBtn.classList.add('has-img');
       };
       reader.readAsDataURL(file);
@@ -688,6 +724,8 @@ document.getElementById('saveGhBtn').addEventListener('click', async ()=>{
       const existingImg = siteData[id] && siteData[id].image ? siteData[id].image : null;
       outData[id] = { title, html, image: existingImg };
     });
+    // save page1 fields too
+    outData['page1'] = siteData['page1'] || DEFAULT_DATA['page1'];
 
     // 2. upload pending images
     for(const id of Object.keys(pendingImages)){
@@ -738,6 +776,7 @@ document.getElementById('saveGhBtn').addEventListener('click', async ()=>{
 
     siteData = outData;
     pendingImages = {};
+    renderMenu();
     toast('✅ Salvato — il sito online si aggiornerà entro un minuto', 4500);
   }catch(err){
     toast('❌ ' + err.message, 5000);
