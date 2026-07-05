@@ -102,7 +102,7 @@ button { font-family: var(--ff-body); cursor: pointer; border: none; background:
 
 #world {
   position: absolute; top: 0; left: 0;
-  width: 3300px; height: 5100px;
+  width: 10400px; height: 2800px;
   will-change: transform;
 }
 #pathSvg {
@@ -538,18 +538,18 @@ const SECTION_ORDER = [
 ];
 
 const POSITIONS = {
-  'intro':          {x:220,  y:220},
-  'tipologie-ia':   {x:1250, y:220},
-  'scraping-db':    {x:2280, y:220},
-  'ciclo-vita':     {x:2280, y:1420},
-  'business-case':  {x:1250, y:1420},
-  'pianificazione': {x:220,  y:1420},
-  'stakeholder':    {x:220,  y:2620},
-  'adempimenti':    {x:1250, y:2620},
-  'marketing':      {x:2280, y:2620},
-  'finanza':        {x:2280, y:3820},
-  'chatbot-rag':    {x:1250, y:3820},
-  'kpi':            {x:220,  y:3820}
+  'intro':          {x:  100, y: 160},
+  'tipologie-ia':   {x:  960, y: 160},
+  'scraping-db':    {x: 1820, y: 160},
+  'ciclo-vita':     {x: 2680, y: 160},
+  'business-case':  {x: 3540, y: 160},
+  'pianificazione': {x: 4400, y: 160},
+  'stakeholder':    {x: 5260, y: 160},
+  'adempimenti':    {x: 6120, y: 160},
+  'marketing':      {x: 6980, y: 160},
+  'finanza':        {x: 7840, y: 160},
+  'chatbot-rag':    {x: 8700, y: 160},
+  'kpi':            {x: 9560, y: 160}
 };
 
 const DEFAULT_DATA = {
@@ -796,8 +796,8 @@ function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
 
 function applyTransform(animated) {
   const vw = viewport.clientWidth, vh = viewport.clientHeight;
-  tx = clamp(tx, vw - 3300 - 100, 100);
-  ty = clamp(ty, vh - 5100 - 100, 100);
+  tx = clamp(tx, vw - 10400 - 100, 100);
+  ty = clamp(ty, vh - 2800 - 100, 100);
   world.style.transition = animated ? 'transform .8s cubic-bezier(.2,.7,.3,1)' : 'none';
   world.style.transform  = `translate(${tx}px,${ty}px)`;
 }
