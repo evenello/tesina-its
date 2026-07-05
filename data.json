@@ -20,7 +20,7 @@
     "image": null
   },
   "business-case": {
-    "title": "Business Case, Business Plan e indici finanziari",
+    "title": "Business Case, Business Plan",
     "html": "<p><em>Contenuto da aggiungere — accedi al pannello di modifica per scrivere questa sezione.</em></p>",
     "image": null
   },
@@ -58,5 +58,12 @@
     "title": "Estrazione Data Insights e KPI",
     "html": "<p>La gestione delle attività in smart working richiede protocolli rigidi per evitare la dispersione dei flussi. Per standardizzare il recupero dei KPI di monitoraggio dei meeting, l'infrastruttura si articola su due livelli tecnici all'interno di Google Workspace:</p><h4>Automazione Entry-Level (Report nativo Google Fogli)</h4><p>Ideale per l'analisi standard dei meeting di gruppo: alla chiusura della sessione il sistema invia un log automatico via email, con tre vincoli — quorum minimo di 5 partecipanti attivi, schedulazione dall'account Admin tramite Google Calendar, chiusura forzata della timeline da parte dell'organizzatore.</p><h4>Monitoraggio Tecnico Avanzato (Meet Quality Tool)</h4><p>Riservato ai ruoli di governance IT tramite la dashboard admin.google.com: supera il limite dei 5 partecipanti e permette il tracciamento granulare in tempo reale — log attività, network graphs sulla stabilità della connessione, system performances hardware.</p><p><strong>Integrazione PM:</strong> l'estrazione sistematica di questi Data Insights automatizza la pipeline di monitoraggio del progetto, traducendo i tempi di interazione in KPI oggettivi per l'efficienza operativa del team remoto.</p>",
     "image": null
+  },
+  "page1": {
+    "eyebrow": "Project Work",
+    "title": "Metodologie di <em>Project Management</em>.<br> applicate all'IA.",
+    "sub": "Un viaggio tra project management, dati e intelligenza artificiale agentic, costruito durante il tirocinio in Uniser.",
+    "buttonLabel": "Entra nel progetto →",
+    "indexHtml": "<li>Tipologie di IA (Predictive, Generative, Agentic)</li> <li>Scraping, modellazione DB, GUI e tabelle dati</li> <li>Ciclo di vita del progetto e metodologie di lavoro</li> <li>Business Case, Business Plan</li> <li>Pianificazione temporale (Gantt, Kanban)</li> <li>Ruoli, responsabilità e Stakeholder</li> <li>Gestione finanziaria, budgeting</li> <li>Architettura tecnica Chatbot RAG</li> <li>Estrazione Data Insights e KPI</li>"
   }
 }
